@@ -1,0 +1,39 @@
+appId: dev.agentpack.app
+productName: AgentPack
+copyright: AgentPack
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - out/**
+  - package.json
+
+# 不打包 node_modules：主进程与渲染层代码已全部内联打包
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  artifactName: AgentPack Setup ${version}.${ext}
+  shortcutName: AgentPack
+
+extraResources:
+  # agent 描述清单（数据驱动，导入/导出共用）
+  - from: ../../registry
+    to: registry
+  # CLI（配合 resources/agentpack.cmd 以 ELECTRON_RUN_AS_NODE 方式运行）
+  - from: ../../packages/cli/dist
+    to: cli
+  - from: build/agentpack.cmd
+    to: agentpack.cmd

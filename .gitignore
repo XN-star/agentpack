@@ -1,0 +1,32 @@
+# 依赖与构建产物
+node_modules/
+dist/
+out/
+release/
+*.tsbuildinfo
+
+# 测试与覆盖率
+coverage/
+.tmp/
+test-output/
+
+# agentpack 导出文件（含用户凭据，绝不入库）
+*.agentpack
+
+# 敏感文件兜底：任何真实凭据/密钥不得入库（fixtures 下的假数据除外）
+credentials*.json
+auth*.json
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+!**/test/fixtures/**
+!**/.github/**
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

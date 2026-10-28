@@ -1,0 +1,12 @@
+#!/bin/sh
+# 拦截疑似真实凭据的文件入库（test/fixtures 下的假数据除外）
+blocked=$(git diff --cached --name-only | grep -Ev '(^|/)test/fixtures/' | grep -Ei '(^|/)(credentials|auth)[^/]*\.(json|ya?ml|toml)$|(^|/)\.env($|\.)|\.pem$|\.key$|\.p12$|\.pfx$')
+if [ -n "$blocked" ]; then
+  echo ""
+  echo "pre-commit: 检测到疑似凭据文件，已阻止提交："
+  echo "$blocked"
+  echo "如确属假数据，请将其移动到 test/fixtures/ 目录后再提交。"
+  echo ""
+  exit 1
+fi
+exit 0
