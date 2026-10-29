@@ -1,0 +1,142 @@
+{
+  "id": "zcode",
+  "name": "ZCode",
+  "description": "ZCode CLI / 桌面端",
+  "restartHint": "完全退出 ZCode（含托盘图标）后重新启动",
+  "roots": [
+    {
+      "id": "zcode-home",
+      "base": "{{home}}/.zcode",
+      "items": [
+        {
+          "id": "agents-md",
+          "label": "AGENTS.md（全局规则）",
+          "path": "AGENTS.md",
+          "type": "file",
+          "category": "rules",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "agents",
+          "label": "子代理定义（agents/）",
+          "path": "agents",
+          "type": "dir",
+          "category": "prompt",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（skills/，含指向其他 agent 的链接，将解引用去重）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "linkPolicy": "dereference",
+          "note": "本目录大量符号链接指向 .trae-cn/.codex 等目录，导出时按内容去重"
+        },
+        {
+          "id": "cli-config",
+          "label": "CLI 配置（cli/config.json）",
+          "path": "cli/config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "v2-config",
+          "label": "核心配置（v2/config.json）",
+          "path": "v2/config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "v2-setting",
+          "label": "界面设置（v2/setting.json）",
+          "path": "v2/setting.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "v2-agents-state",
+          "label": "子代理状态（v2/agents-state.json）",
+          "path": "v2/agents-state.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "v2-bot-state",
+          "label": "机器人状态（v2/bot-state.v2.json）",
+          "path": "v2/bot-state.v2.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "v2-model-cache",
+          "label": "模型缓存（v2/bots-model-cache.v2.json）",
+          "path": "v2/bots-model-cache.v2.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "v2-coding-plan",
+          "label": "编码计划缓存（v2/coding-plan-cache.json）",
+          "path": "v2/coding-plan-cache.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "memories",
+          "label": "记忆库（cli/memories/）",
+          "path": "cli/memories",
+          "type": "dir",
+          "category": "memory",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "credentials",
+          "label": "凭据（v2/credentials.json）",
+          "path": "v2/credentials.json",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false,
+          "note": "API 密钥等，导出需手动勾选并加密"
+        },
+        {
+          "id": "certs",
+          "label": "网络 CA 证书与私钥（v2/certs/）",
+          "path": "v2/certs",
+          "type": "dir",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "cli/plugins（约 1.6GB）", "reason": "插件缓存，重装时自动生成" },
+    { "path": "cli/db、cli/artifacts、cli/log、cli/rollout", "reason": "本地数据库、运行产物与日志" },
+    { "path": "backup/", "reason": "自动备份" },
+    { "path": "v2/logs、v2/tasks-index.sqlite、v2/telemetry-state.json", "reason": "日志/索引/遥测" },
+    { "path": "%APPDATA%\\ZCode\\session", "reason": "桌面端会话数据" },
+    { "path": "D:\\ZCode\\.zcode", "reason": "数据盘工作区数据（会话记录、凭据），路径随安装位置变化" }
+  ]
+}

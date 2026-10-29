@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "mimosa-hook-status/v1",
+  "recordedAt": "2026-10-28T09:26:23.160Z",
+  "sessionId": "session_f900071542b289cbe30b665853966f53",
+  "event": "PostToolUse",
+  "toolName": "Write",
+  "file": "packages/core/test/integration.test.ts",
+  "outcome": "static_verified",
+  "coverage": "complete",
+  "findingCount": 3,
+  "durationMs": 1078,
+  "hostState": "hook_complete",
+  "reportHint": ".mimosa/reports/"
+}

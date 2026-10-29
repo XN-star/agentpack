@@ -1,0 +1,254 @@
+{
+  "id": "hermes",
+  "name": "Hermes",
+  "description": "Nous Research Hermes 桌面端",
+  "restartHint": "完全退出 Hermes（含后台 gateway 服务）后重新启动",
+  "roots": [
+    {
+      "id": "hermes-local",
+      "base": "{{localappdata}}/hermes",
+      "items": [
+        {
+          "id": "config-yaml",
+          "label": "主配置（config.yaml）",
+          "path": "config.yaml",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（skills/）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "memories",
+          "label": "记忆（memories/）",
+          "path": "memories",
+          "type": "dir",
+          "category": "memory",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "sessions",
+          "label": "会话记录（sessions/，可选）",
+          "path": "sessions",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "plugins",
+          "label": "插件（plugins/）",
+          "path": "plugins",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "desktop-plugins",
+          "label": "桌面插件（desktop-plugins/）",
+          "path": "desktop-plugins",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "hooks",
+          "label": "钩子（hooks/）",
+          "path": "hooks",
+          "type": "dir",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "cron",
+          "label": "定时任务（cron/）",
+          "path": "cron",
+          "type": "dir",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "kanban-db",
+          "label": "看板数据库（kanban.db）",
+          "path": "kanban.db",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "projects-db",
+          "label": "项目数据库（projects.db）",
+          "path": "projects.db",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "shared-state-db",
+          "label": "共享状态库（shared-state.db）",
+          "path": "shared-state.db",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "state-db",
+          "label": "状态数据库（state.db，迁移前请退出 Hermes）",
+          "path": "state.db",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "note": "存在 -wal/-shm 伴生文件，应用运行时可能被锁定"
+        },
+        {
+          "id": "auth",
+          "label": "登录凭据（auth.json）",
+          "path": "auth.json",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        },
+        {
+          "id": "env",
+          "label": "环境变量（.env，含密钥）",
+          "path": ".env",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    },
+    {
+      "id": "hermes-roaming",
+      "base": "{{appdata}}/Hermes",
+      "items": [
+        {
+          "id": "connection",
+          "label": "连接配置（connection.json）",
+          "path": "connection.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "connections",
+          "label": "连接列表（connections.json）",
+          "path": "connections.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "backend-ownership",
+          "label": "后端归属（backend-ownership.json）",
+          "path": "backend-ownership.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "native-theme",
+          "label": "主题（native-theme.json）",
+          "path": "native-theme.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "keep-awake",
+          "label": "保持唤醒（keep-awake.json）",
+          "path": "keep-awake.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "translucency",
+          "label": "透明效果（translucency.json）",
+          "path": "translucency.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "zoom-state",
+          "label": "缩放设置（zoom-state.json，可选）",
+          "path": "zoom-state.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "window-state",
+          "label": "窗口布局（window-state.json，可选）",
+          "path": "window-state.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "desktop-installation",
+          "label": "安装标识（desktop-installation.json，一般无需迁移）",
+          "path": "desktop-installation.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "desktop-skills",
+          "label": "桌面端技能（skills/）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "secure-token-storage",
+          "label": "安全令牌存储（secure-token-storage.json）",
+          "path": "secure-token-storage.json",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "cache/、audio_cache/、image_cache/、bootstrap-cache/", "reason": "运行缓存" },
+    { "path": "models_dev_cache.json、provider_models_cache.json", "reason": "模型列表缓存，自动刷新" },
+    { "path": "bin/、node/、installs/、runtime/、gateway-service/、hermes-agent/", "reason": "运行时组件，随更新重置" },
+    { "path": "backups/（约 145MB）", "reason": "应用自带应急备份" },
+    { "path": "*.lock、*.pid", "reason": "运行锁文件" },
+    { "path": "%APPDATA%\\hermes-desktop", "reason": "Electron 壳缓存与浏览器态（登录态不可迁移）" }
+  ]
+}

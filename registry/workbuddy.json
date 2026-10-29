@@ -1,0 +1,96 @@
+{
+  "id": "workbuddy",
+  "name": "WorkBuddy",
+  "description": "WorkBuddy（VSCode 分支桌面助手）",
+  "restartHint": "完全退出 WorkBuddy 后重新启动",
+  "roots": [
+    {
+      "id": "workbuddy-roaming",
+      "base": "{{appdata}}/WorkBuddy",
+      "items": [
+        {
+          "id": "user-settings",
+          "label": "编辑器设置（User/settings.json）",
+          "path": "User/settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-snippets",
+          "label": "代码片段（User/snippets/）",
+          "path": "User/snippets",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "storage-json",
+          "label": "全局存储（User/globalStorage/storage.json）",
+          "path": "User/globalStorage/storage.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "coding-copilot",
+          "label": "腾讯云 Coding 扩展数据（User/globalStorage/tencent-cloud.coding-copilot/）",
+          "path": "User/globalStorage/tencent-cloud.coding-copilot",
+          "type": "dir",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false,
+          "note": "含扩展登录态，跨设备可能需重新登录"
+        },
+        {
+          "id": "automations",
+          "label": "自动化任务（automations/）",
+          "path": "automations",
+          "type": "dir",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "note": "automations.db 及其 -wal/-shm 伴生文件，迁移前请退出 WorkBuddy"
+        },
+        {
+          "id": "codebuddy-sessions",
+          "label": "CodeBuddy 会话库（codebuddy-sessions.vscdb，可选）",
+          "path": "codebuddy-sessions.vscdb",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "languagepacks",
+          "label": "语言包（languagepacks.json）",
+          "path": "languagepacks.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-history",
+          "label": "本地文件历史（User/History/，可选）",
+          "path": "User/History",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "machineid、Local State、Preferences", "reason": "设备标识与应用状态，不可迁移" },
+    { "path": "Cache、Code Cache、GPUCache、DawnGraphiteCache 等", "reason": "运行缓存" },
+    { "path": "Local Storage、Session Storage、Network（Cookies）、WebStorage、SharedStorage", "reason": "浏览器登录态，不可迁移" },
+    { "path": "User/globalStorage/state.vscdb", "reason": "界面状态与扩展登录态数据库" },
+    { "path": "User/workspaceStorage/", "reason": "工作区数据" },
+    { "path": "CachedProfilesData、Partitions、Service Worker、CrashReport、Dictionaries、clp/", "reason": "运行数据与缓存" }
+  ]
+}

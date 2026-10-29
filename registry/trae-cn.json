@@ -1,0 +1,188 @@
+{
+  "id": "trae-cn",
+  "name": "Trae CN",
+  "description": "Trae 国内版（含 TRAE SOLO CN）",
+  "restartHint": "完全退出 Trae CN / TRAE SOLO CN 后重新启动",
+  "roots": [
+    {
+      "id": "trae-home",
+      "base": "{{home}}/.trae-cn",
+      "items": [
+        {
+          "id": "mcps",
+          "label": "MCP 服务器（mcps/）",
+          "path": "mcps",
+          "type": "dir",
+          "category": "mcp",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（skills/）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "builtin-skills",
+          "label": "内置技能配置（builtin_skills/）",
+          "path": "builtin_skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-rules",
+          "label": "自定义规则（user_rules/）",
+          "path": "user_rules",
+          "type": "dir",
+          "category": "rules",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "memory-config",
+          "label": "记忆配置（memory-config.json）",
+          "path": "memory-config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skill-config",
+          "label": "技能配置（skill-config.json）",
+          "path": "skill-config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "plugin-config",
+          "label": "插件配置（plugin-config.json）",
+          "path": "plugin-config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "installed-plugins",
+          "label": "已装插件清单（installed-plugins.json）",
+          "path": "installed-plugins.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "permission",
+          "label": "权限配置（permission/）",
+          "path": "permission",
+          "type": "dir",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "argv",
+          "label": "启动参数（argv.json）",
+          "path": "argv.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "jwt-token",
+          "label": "登录令牌（trae-jwt-token）",
+          "path": "trae-jwt-token",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false,
+          "note": "JWT 登录态，跨设备可能失效"
+        }
+      ]
+    },
+    {
+      "id": "trae-roaming",
+      "base": "{{appdata}}/Trae CN",
+      "items": [
+        {
+          "id": "user-settings",
+          "label": "编辑器设置（User/settings.json）",
+          "path": "User/settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-mcp",
+          "label": "MCP 配置（User/mcp.json）",
+          "path": "User/mcp.json",
+          "type": "file",
+          "category": "mcp",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-snippets",
+          "label": "代码片段（User/snippets/）",
+          "path": "User/snippets",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    },
+    {
+      "id": "trae-solo-roaming",
+      "base": "{{appdata}}/TRAE SOLO CN",
+      "items": [
+        {
+          "id": "solo-user-settings",
+          "label": "SOLO 编辑器设置（User/settings.json）",
+          "path": "User/settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "solo-user-mcp",
+          "label": "SOLO MCP 配置（User/mcp.json）",
+          "path": "User/mcp.json",
+          "type": "file",
+          "category": "mcp",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "solo-user-snippets",
+          "label": "SOLO 代码片段（User/snippets/）",
+          "path": "User/snippets",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "work/（约 294MB）、worktrees/", "reason": "工作区数据" },
+    { "path": "extensions/（约 161MB）", "reason": "扩展安装目录，重装自动下载" },
+    { "path": "builtin/", "reason": "内置资源" },
+    { "path": "attachments/、.thumbnails/、hub_event_cache/、trae-browser-screenshots/", "reason": "附件/缩略图/缓存" },
+    { "path": "User/globalStorage/、User/workspaceStorage/", "reason": "界面状态与工作区数据" },
+    { "path": "Local Storage、Session Storage、Network（Cookies）", "reason": "浏览器登录态，不可迁移" }
+  ]
+}

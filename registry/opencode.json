@@ -1,0 +1,118 @@
+{
+  "id": "opencode",
+  "name": "OpenCode",
+  "description": "OpenCode CLI / 桌面端",
+  "restartHint": "重启 OpenCode CLI 与桌面端后生效",
+  "versionProbes": [
+    {
+      "path": "cli",
+      "kind": "dirname-version",
+      "dir": "{{appdata}}/ai.opencode.desktop/cli"
+    }
+  ],
+  "roots": [
+    {
+      "id": "opencode-config",
+      "base": "{{home}}/.config/opencode",
+      "items": [
+        {
+          "id": "opencode-json",
+          "label": "主配置（opencode.json）",
+          "path": "opencode.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "opencode-jsonc",
+          "label": "主配置注释版（opencode.jsonc）",
+          "path": "opencode.jsonc",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "agent-team",
+          "label": "智能体团队与角色（agent-team/）",
+          "path": "agent-team",
+          "type": "dir",
+          "category": "prompt",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    },
+    {
+      "id": "opencode-home",
+      "base": "{{home}}/.opencode",
+      "items": [
+        {
+          "id": "skills",
+          "label": "技能（skills/）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    },
+    {
+      "id": "opencode-data",
+      "base": "{{home}}/.local/share/opencode",
+      "items": [
+        {
+          "id": "opencode-db",
+          "label": "主数据库（opencode.db，迁移前请退出 OpenCode）",
+          "path": "opencode.db",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "note": "约 37MB，含会话与项目数据"
+        },
+        {
+          "id": "auth",
+          "label": "登录凭据（auth.json）",
+          "path": "auth.json",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    },
+    {
+      "id": "opencode-desktop",
+      "base": "{{appdata}}/ai.opencode.desktop",
+      "items": [
+        {
+          "id": "desktop-settings",
+          "label": "桌面端设置（opencode.settings）",
+          "path": "opencode.settings",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "drafts",
+          "label": "草稿（drafts.sqlite，可选）",
+          "path": "drafts.sqlite",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "node_modules/、bun.lock、package-lock.json", "reason": "依赖与锁文件，可重装" },
+    { "path": "browser-profile/", "reason": "浏览器态" },
+    { "path": "repos/、snapshot/、storage/、shell/、tool-output/、log/", "reason": "运行数据与日志" },
+    { "path": "%APPDATA%\\ai.opencode.desktop\\Cache 等", "reason": "Electron 壳缓存与登录态" }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "id": "codex",
+  "name": "Codex",
+  "description": "OpenAI Codex CLI",
+  "restartHint": "重启 Codex CLI 会话后生效",
+  "roots": [
+    {
+      "id": "codex-home",
+      "base": "{{home}}/.codex",
+      "items": [
+        {
+          "id": "config-toml",
+          "label": "主配置（config.toml）",
+          "path": "config.toml",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "agents-md",
+          "label": "AGENTS.md（全局规则）",
+          "path": "AGENTS.md",
+          "type": "file",
+          "category": "rules",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "rules",
+          "label": "规则目录（rules/）",
+          "path": "rules",
+          "type": "dir",
+          "category": "rules",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "agents",
+          "label": "子代理定义（agents/）",
+          "path": "agents",
+          "type": "dir",
+          "category": "prompt",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "hooks",
+          "label": "钩子配置（hooks.json）",
+          "path": "hooks.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "memories",
+          "label": "记忆（memories/）",
+          "path": "memories",
+          "type": "dir",
+          "category": "memory",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（skills/，多为符号链接，将解引用去重）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "linkPolicy": "dereference"
+        },
+        {
+          "id": "auth",
+          "label": "登录凭据（auth.json）",
+          "path": "auth.json",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false,
+          "note": "含 API Key 与登录态，跨设备后 OAuth 登录可能需重新认证"
+        },
+        {
+          "id": "secrets",
+          "label": "MCP OAuth 密钥（secrets/）",
+          "path": "secrets",
+          "type": "dir",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        },
+        {
+          "id": "sandbox-secrets",
+          "label": "沙箱账户（.sandbox-secrets/）",
+          "path": ".sandbox-secrets",
+          "type": "dir",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "plugins/（约 468MB）", "reason": "插件缓存，随版本自动下载" },
+    { "path": "sessions/、thread_history_*.sqlite、logs_*.sqlite 等", "reason": "会话历史与日志数据库" },
+    { "path": ".sandbox-bin/", "reason": "内置运行器，随版本更新" },
+    { "path": "backups/", "reason": "自动备份（含凭据副本，禁止扩散）" },
+    { "path": "installation_id、cap_sid、mcp-oauth-locks/", "reason": "设备标识与运行锁" },
+    { "path": ".tmp/", "reason": "临时文件" }
+  ]
+}
