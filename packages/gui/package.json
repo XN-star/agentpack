@@ -4,6 +4,10 @@
   "description": "AgentPack 图形界面（Electron）",
   "license": "MIT",
   "main": "out/main/index.js",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "yauzl": "^3.2.0"
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
