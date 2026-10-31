@@ -12,6 +12,16 @@
 
 仅支持 Windows 10+。
 
+## 界面预览
+
+<p align="center">
+  <img src="docs/screenshots/export-agents.png" alt="导出配置页：自动扫描本机 agent 配置" width="49%" />
+  <img src="docs/screenshots/export-entries.png" alt="条目详情：敏感级标注、凭据默认排除、不可迁移自动排除" width="49%" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/import.png" alt="导入配置页：密码验证后预览条目清单" width="60%" />
+</p>
+
 ## 安装
 
 前往 [GitHub Releases](../../releases) 下载最新 `AgentPack Setup x.x.x.exe`，双击安装（可选安装目录、自动创建桌面/开始菜单快捷方式）。
