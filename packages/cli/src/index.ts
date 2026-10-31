@@ -18,6 +18,7 @@ import {
   isAppError,
   loadRegistries,
   openPack,
+  parsePathMappingSpecs,
   previewImport,
   readHistory,
   readManifest,
@@ -345,6 +346,12 @@ program
   .option('--password-env <var>', '从环境变量读取密码（自动化推荐）')
   .option('--backup-dir <dir>', '备份目录（默认 ~/agentpack-backups/<时间戳>）')
   .option('--dry-run', '仅预览，不写入')
+  .option(
+    '--map <spec>',
+    '非标准路径映射 来源=目标（可重复），如 --map "E:/MyTools=D:/TeamTools"',
+    collectStrings,
+    [],
+  )
   .action(
     async (
       file: string,
@@ -354,12 +361,14 @@ program
         passwordEnv?: string;
         backupDir?: string;
         dryRun?: boolean;
+        map: string[];
       },
     ) => {
       try {
         if (!['overwrite', 'skip', 'backup'].includes(opts.strategy)) {
           throw new AppError('IO_ERROR', `无效的冲突策略: ${opts.strategy}`);
         }
+        const pathMap = parsePathMappingSpecs(opts.map ?? []);
         let password: string;
         if (opts.passwordEnv) {
           const v = process.env[opts.passwordEnv];
@@ -373,13 +382,23 @@ program
         const handle = await openPack(file, password);
         try {
           const ctx = await withContext();
-          const preview = previewImport(handle, ctx);
+          const preview = previewImport(handle, ctx, pathMap);
           const filtered = preview.filter(
             (p) => !opts.agent.length || opts.agent.includes(p.item.agentId),
           );
           console.log(
             `来源: ${handle.manifest.sourceMachineName ?? '(未记录机器名)'}  导出于 ${handle.manifest.createdAt}`,
           );
+          const nonStandard = filtered.filter((p) => p.nonStandardPath);
+          if (nonStandard.length > 0) {
+            console.log('  ℹ 包含来自非标准位置的条目（三基准目录之外）：');
+            for (const p of nonStandard) {
+              const target = pathMap.length
+                ? `映射到 ${p.targetAbs}`
+                : '未提供 --map 映射，将按来源路径原样落位';
+              console.log(`    · ${p.item.placeholderPath} → ${target}`);
+            }
+          }
           for (const p of filtered) {
             const conflict =
               p.conflict === 'exists' ? `  ⚠ 目标已存在（${formatBytes(p.existingSize)}）` : '  新增';
@@ -399,6 +418,7 @@ program
             handle,
             ctx,
             decisions,
+            pathMap,
             backupRoot: opts.backupDir ? path.resolve(opts.backupDir) : undefined,
             packPath: path.resolve(file),
             onProgress: (p) => {

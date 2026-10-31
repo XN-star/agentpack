@@ -6,6 +6,7 @@ const api = {
   addManualPath: (p: string) => ipcRenderer.invoke('add-manual-path', p),
   chooseSavePath: () => ipcRenderer.invoke('choose-save-path'),
   choosePackFile: () => ipcRenderer.invoke('choose-pack-file'),
+  chooseDir: () => ipcRenderer.invoke('choose-dir'),
   getDefaultOutDir: () => ipcRenderer.invoke('get-default-out-dir'),
   exportPack: (payload: unknown) => ipcRenderer.invoke('export-pack', payload),
   importPreview: (payload: unknown) =>

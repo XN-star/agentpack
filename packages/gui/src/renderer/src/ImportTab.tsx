@@ -16,6 +16,8 @@ export default function ImportTab() {
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [globalStrategy, setGlobalStrategy] = useState<ConflictStrategy>('backup');
   const [decisions, setDecisions] = useState<Record<string, ConflictStrategy>>({});
+  /** 非标准路径映射：源前缀（placeholderPath）→ 本机目标目录 */
+  const [mapTargets, setMapTargets] = useState<Record<string, string>>({});
   const [phase, setPhase] = useState<'input' | 'working' | 'done'>('input');
   const [progress, setProgress] = useState<{ percent: number; label: string }>({
     percent: 0,
@@ -62,6 +64,7 @@ export default function ImportTab() {
         d[p.item.key] = globalStrategy;
       }
       setDecisions(d);
+      setMapTargets({});
     } else {
       setPreview(null);
       setErrText(r.message);
@@ -82,10 +85,18 @@ export default function ImportTab() {
     for (const p of selected) {
       dec[p.item.key] = decisions[p.item.key] ?? globalStrategy;
     }
+    // 非标准路径映射：仅收集填写了目标目录的项
+    const pathMap = preview.preview
+      .filter((p) => p.nonStandardPath && (mapTargets[p.item.placeholderPath] ?? '').trim())
+      .map((p) => ({
+        from: p.item.placeholderPath,
+        to: mapTargets[p.item.placeholderPath].trim(),
+      }));
     const r = await window.agentpack.importExecute({
       packPath,
       password,
       decisions: dec,
+      pathMap,
     });
     if (r.ok) {
       setReport(r.report);
@@ -124,6 +135,17 @@ export default function ImportTab() {
       .map((id) => ({ id, hint: preview.agentHints[id] }))
       .filter((x) => x.hint);
   };
+
+  /** 需要映射确认的唯一源路径前缀（三基准之外的手动条目） */
+  const nonStandardSources = preview
+    ? [
+        ...new Set(
+          preview.preview
+            .filter((p) => p.nonStandardPath)
+            .map((p) => p.item.placeholderPath),
+        ),
+      ]
+    : [];
 
   return (
     <div className="import-tab">
@@ -195,6 +217,40 @@ export default function ImportTab() {
                 覆盖=直接替换目标文件；跳过=保留目标已有配置；备份后写入=先把目标已有文件备份到
                 <code> ~/agentpack-backups/</code> 再写入（推荐）。路径已按本机用户目录自动适配。
               </p>
+              {nonStandardSources.length > 0 && (
+                <div className="pathmap-box">
+                  <b>非标准路径条目（{nonStandardSources.length}）</b>
+                  <p className="muted">
+                    以下路径来自导出电脑的自定义位置（不在用户目录/AppData
+                    下）。请填写它们在本机的对应位置，导入时会同步改写落位与配置内容中的相关路径；留空则按来源路径原样落位。
+                  </p>
+                  {nonStandardSources.map((src) => (
+                    <div className="row pathmap-row" key={src}>
+                      <code className="map-from" title={src}>
+                        {src}
+                      </code>
+                      <input
+                        type="text"
+                        placeholder="本机目标目录（可留空）"
+                        value={mapTargets[src] ?? ''}
+                        onChange={(e) =>
+                          setMapTargets({ ...mapTargets, [src]: e.target.value })
+                        }
+                      />
+                      <button
+                        className="btn btn-small"
+                        onClick={() => {
+                          void window.agentpack.chooseDir().then((d) => {
+                            if (d) setMapTargets({ ...mapTargets, [src]: d });
+                          });
+                        }}
+                      >
+                        浏览…
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               <ul className="items">
                 {preview.preview.map((p) => (
                   <li key={p.item.key}>
@@ -214,6 +270,9 @@ export default function ImportTab() {
                           </span>
                           {p.conflict === 'exists' && p.existingSize > 0 && (
                             <span className="muted">（现 {formatBytes(p.existingSize)}）</span>
+                          )}
+                          {p.nonStandardPath && (
+                            <span className="badge badge-new">非标准路径</span>
                           )}
                         </div>
                         <div className="item-sub">

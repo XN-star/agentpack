@@ -56,7 +56,7 @@ npm run dist                # 生成 NSIS 安装包 → packages/gui/release/
    - **跳过**：保留目标已有配置
 3. 开始导入 → 查看结果报告 → 按提示重启对应 agent 应用生效
 
-**手动添加**：registry 未覆盖的配置路径，用「手动添加路径」选择任意文件/目录一起打包；含绝对路径的文本配置会在导入时自动改写为目标机器路径。
+**手动添加**：registry 未覆盖的配置路径，用「手动添加路径」选择任意文件/目录一起打包；含绝对路径的文本配置会在导入时自动改写为目标机器路径。来源电脑自定义位置（用户目录/AppData 之外）的条目，导入时会出现「非标准路径」映射表，填写本机对应目录即可完成落位与内容改写。
 
 ## 命令行
 
@@ -69,6 +69,7 @@ agentpack export -o 迁移.agentpack [--agent zcode,codex]
 agentpack verify 迁移.agentpack [--password-env VAR] # 校验完整性/密码
 agentpack import 迁移.agentpack -s backup|overwrite|skip
                     [--agent ...] [--dry-run] [--backup-dir <dir>]
+                    [--map 来源=目标]...               # 非标准路径映射（可重复），如 --map "E:/MyTools=D:/TeamTools"
 agentpack history [--limit N] [--json] [--clear]    # 查看/清空导入导出记录
 ```
 

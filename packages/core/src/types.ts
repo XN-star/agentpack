@@ -24,6 +24,17 @@ export interface PathContext {
   localappdata: string;
 }
 
+/**
+ * 自定义路径映射（导入方提供）：把来源机器的路径前缀映射到目标机器。
+ * 两端均为正斜杠形式；不写入 agentpack 包文件。
+ */
+export interface PathMapping {
+  /** 来源机器路径前缀（正斜杠） */
+  from: string;
+  /** 目标机器路径前缀（正斜杠） */
+  to: string;
+}
+
 /** registry 中一个条目（registry JSON 里的 items 元素） */
 export interface RegistryItem {
   id: string;
@@ -219,11 +230,13 @@ export interface HistoryEntry {
 
 export interface ImportPreviewItem {
   item: PackedItemEntry;
-  /** 目标机器绝对路径 */
+  /** 目标机器绝对路径（应用 pathMap 后） */
   targetAbs: string;
   /** 冲突状态 */
   conflict: 'none' | 'exists';
   existingSize: number;
+  /** 条目来自三基准之外（占位符路径非 {{ 开头），导入时需要路径映射确认 */
+  nonStandardPath: boolean;
 }
 
 export interface ImportReport {

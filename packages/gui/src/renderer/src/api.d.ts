@@ -6,6 +6,7 @@ import type {
   ImportProgress,
   PackManifest,
   PackProgress,
+  PathMapping,
   ScanResult,
   ScannedItem,
 } from '@agentpack/core';
@@ -42,6 +43,7 @@ export interface AgentPackApi {
   addManualPath(p: string): Promise<ScannedItem>;
   chooseSavePath(): Promise<string | null>;
   choosePackFile(): Promise<string | null>;
+  chooseDir(): Promise<string | null>;
   getDefaultOutDir(): Promise<string>;
   exportPack(payload: {
     items: ScannedItem[];
@@ -52,11 +54,13 @@ export interface AgentPackApi {
   importPreview(payload: {
     packPath: string;
     password: string;
+    pathMap?: PathMapping[];
   }): Promise<ImportPreviewResult | IpcError>;
   importExecute(payload: {
     packPath: string;
     password: string;
     decisions: Record<string, ConflictStrategy>;
+    pathMap?: PathMapping[];
   }): Promise<ImportExecuteResult | IpcError>;
   getHistory(): Promise<HistoryEntry[]>;
   clearHistory(): Promise<void>;

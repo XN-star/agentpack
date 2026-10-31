@@ -845,3 +845,31 @@ code {
   background: var(--ok);
   border-color: var(--ok);
 }
+
+/* 导入页：非标准路径映射编辑区 */
+.pathmap-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pathmap-box .pathmap-row {
+  align-items: center;
+  gap: 8px;
+}
+
+.pathmap-box .map-from {
+  flex: 0 1 45%;
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pathmap-box input {
+  flex: 1;
+}

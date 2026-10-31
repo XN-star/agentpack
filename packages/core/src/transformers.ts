@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { PathContext } from './types';
+import type { PathContext, PathMapping } from './types';
 
 /** 需要做路径改写的文本扩展名 */
 const TEXT_EXTS = new Set([
@@ -30,14 +30,25 @@ function jsonEscape(p: string): string {
   return p.replace(/\\/g, '\\\\');
 }
 
+function toBackslashes(p: string): string {
+  return p.replace(/\//g, '\\');
+}
+
+/** 规范化映射端点：正斜杠、去尾斜杠 */
+function normMapPath(p: string): string {
+  return p.replace(/\\/g, '/').replace(/\/+$/, '');
+}
+
 /**
- * 把内容中来源机器的基准目录（home/appdata/localappdata）替换为目标机器的对应目录。
+ * 把内容中来源机器的基准目录（home/appdata/localappdata）替换为目标机器的对应目录；
+ * 再应用导入方提供的自定义路径映射（pathMap，覆盖三基准之外的路径前缀）。
  * 覆盖三种写法：原始反斜杠、正斜杠、JSON 转义反斜杠。
  */
 export function rewriteSourcePaths(
   content: string,
   sourceCtx: PathContext,
   targetCtx: PathContext,
+  pathMap?: PathMapping[],
 ): { text: string; changes: number } {
   let changes = 0;
   let text = content;
@@ -66,6 +77,40 @@ export function rewriteSourcePaths(
       });
     }
   }
+  // 自定义映射：最长前缀优先；与三基准（或其祖先）重叠的映射跳过，避免双重改写
+  const bases = [sourceCtx.home, sourceCtx.appdata, sourceCtx.localappdata]
+    .filter(Boolean)
+    .map(normMapPath)
+    .map((b) => b.toLowerCase());
+  const ordered = [...(pathMap ?? [])]
+    .map((m) => ({ from: normMapPath(m.from), to: normMapPath(m.to) })
+    )
+    .filter((m) => m.from && m.to)
+    .filter(
+      (m) =>
+        !bases.some(
+          (b) =>
+            m.from.toLowerCase() === b ||
+            b.toLowerCase().startsWith(m.from.toLowerCase() + '/'),
+        ),
+    )
+    .sort((a, b) => b.from.length - a.from.length);
+  for (const m of ordered) {
+    // 三种写法变体统一边界：前缀后必须是结尾/空白/引号/斜杠，防止 E:/A 误吞 E:/AB
+    const edge = '(?=$|[\\s"/\\\\])';
+    const variants: Array<[string, string]> = [
+      [m.from, m.to],
+      [toBackslashes(m.from), toBackslashes(m.to)],
+      [jsonEscape(toBackslashes(m.from)), jsonEscape(toBackslashes(m.to))],
+    ];
+    for (const [f, t] of variants) {
+      const re = new RegExp(escapeRegExp(f) + edge, 'gi');
+      text = text.replace(re, () => {
+        changes++;
+        return t;
+      });
+    }
+  }
   return { text, changes };
 }
 
@@ -77,6 +122,7 @@ export async function maybeRewriteFile(
   absPath: string,
   sourceCtx: PathContext,
   targetCtx: PathContext,
+  pathMap?: PathMapping[],
 ): Promise<number> {
   try {
     const st = await fs.promises.stat(absPath);
@@ -88,7 +134,12 @@ export async function maybeRewriteFile(
       return 0;
     }
     const original = await fs.promises.readFile(absPath, 'utf8');
-    const { text, changes } = rewriteSourcePaths(original, sourceCtx, targetCtx);
+    const { text, changes } = rewriteSourcePaths(
+      original,
+      sourceCtx,
+      targetCtx,
+      pathMap,
+    );
     if (changes > 0 && text !== original) {
       await fs.promises.writeFile(absPath, text, 'utf8');
     }

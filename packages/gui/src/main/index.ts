@@ -126,6 +126,17 @@ function registerIpc(): void {
     return r.filePaths[0];
   });
 
+  ipcMain.handle('choose-dir', async () => {
+    const r = await dialog.showOpenDialog(win!, {
+      title: '选择本机目标目录',
+      properties: ['openDirectory', 'createDirectory'],
+    });
+    if (r.canceled || r.filePaths.length === 0) {
+      return null;
+    }
+    return r.filePaths[0];
+  });
+
   ipcMain.handle(
     'export-pack',
     async (
@@ -161,10 +172,18 @@ function registerIpc(): void {
 
   ipcMain.handle(
     'import-preview',
-    async (_e, payload: { packPath: string; password: string }) => {
+    async (_e, payload: {
+      packPath: string;
+      password: string;
+      pathMap?: core.PathMapping[];
+    }) => {
       try {
         const handle = await getHandle(payload.packPath, payload.password);
-        const preview = core.previewImport(handle, core.defaultPathContext());
+        const preview = core.previewImport(
+          handle,
+          core.defaultPathContext(),
+          payload.pathMap,
+        );
         const regs = core.loadRegistries(registryDir());
         const agentHints: Record<string, string> = {};
         for (const reg of regs) {
@@ -188,6 +207,7 @@ function registerIpc(): void {
       packPath: string;
       password: string;
       decisions: Record<string, ConflictStrategy>;
+      pathMap?: core.PathMapping[];
     }) => {
       try {
         const handle = await getHandle(payload.packPath, payload.password);
@@ -195,6 +215,7 @@ function registerIpc(): void {
           handle,
           ctx: core.defaultPathContext(),
           decisions: payload.decisions,
+          pathMap: payload.pathMap,
           onProgress: (p: ImportProgress) => sendImportProgress(p),
         });
         await handle.close().catch(() => {});

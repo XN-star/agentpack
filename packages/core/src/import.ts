@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { AppError } from './errors';
 import { appendHistory, makeEntry } from './history';
-import { expandPath } from './paths';
+import { applyPathMapping, expandPath } from './paths';
 import { maybeRewriteFile } from './transformers';
 import type { OpenPackHandle } from './unpack';
 import { extractEntryToFileFast, readEntryBuffer } from './zip';
@@ -12,6 +12,7 @@ import type {
   ImportProgress,
   ImportReport,
   PathContext,
+  PathMapping,
   PackedFileEntry,
 } from './types';
 
@@ -44,14 +45,15 @@ function stripToken(dest: string): string {
   return dest.replace(/^\{\{[^}]+\}\}\//, '');
 }
 
-/** 导入前预览：逐条目给出目标路径与冲突状态（凭据内容不在此展示） */
+/** 导入前预览：逐条目给出目标路径（应用 pathMap 后）与冲突状态（凭据内容不在此展示） */
 export function previewImport(
   handle: OpenPackHandle,
   ctx: PathContext,
+  pathMap?: PathMapping[],
 ): ImportPreviewItem[] {
   const out: ImportPreviewItem[] = [];
   for (const item of handle.entries.items) {
-    const targetAbs = expandPath(item.placeholderPath, ctx);
+    const targetAbs = expandPath(applyPathMapping(item.placeholderPath, pathMap ?? []), ctx);
     let conflict: 'none' | 'exists' = 'none';
     let existingSize = 0;
     try {
@@ -61,7 +63,13 @@ export function previewImport(
     } catch {
       // 目标不存在 → 新增
     }
-    out.push({ item, targetAbs, conflict, existingSize });
+    out.push({
+      item,
+      targetAbs,
+      conflict,
+      existingSize,
+      nonStandardPath: !item.placeholderPath.startsWith('{{'),
+    });
   }
   return out;
 }
@@ -77,6 +85,8 @@ export interface ImportOptions {
   packPath?: string;
   /** 为 true 时只演练不写盘 */
   dryRun?: boolean;
+  /** 自定义路径映射：三基准之外的来源路径前缀 → 目标机器路径前缀 */
+  pathMap?: PathMapping[];
   onProgress?: (p: ImportProgress) => void;
 }
 
@@ -124,6 +134,10 @@ async function executeImportInner(
   opts: ImportOptions,
 ): Promise<ImportReport> {
   const { handle, ctx } = opts;
+  const pathMap = opts.pathMap ?? [];
+  /** 落位路径：非占位符条目先应用导入方映射，再按目标机器展开 */
+  const toAbs = (dest: string): string =>
+    expandPath(applyPathMapping(dest, pathMap), ctx);
   const report: ImportReport = {
     written: 0,
     skipped: 0,
@@ -157,11 +171,12 @@ async function executeImportInner(
   for (const item of needBackup) {
     const files = filesByItem.get(item.key) ?? [];
     for (const f of files) {
-      if (isUnsafeDest(f.dest)) {
+      const mapped = applyPathMapping(f.dest, pathMap);
+      if (isUnsafeDest(f.dest) || isUnsafeDest(mapped)) {
         report.warnings.push(`不安全的目标路径，已跳过: ${f.dest}`);
         continue;
       }
-      const abs = expandPath(f.dest, ctx);
+      const abs = expandPath(mapped, ctx);
       try {
         await fs.promises.access(abs);
       } catch {
@@ -229,12 +244,13 @@ async function executeImportInner(
       report.skipped++;
       continue;
     }
-    if (isUnsafeDest(f.dest)) {
+    const mapped = applyPathMapping(f.dest, pathMap);
+    if (isUnsafeDest(f.dest) || isUnsafeDest(mapped)) {
       report.warnings.push(`不安全的目标路径，已跳过: ${f.dest}`);
       report.skipped++;
       continue;
     }
-    const destAbs = expandPath(f.dest, ctx);
+    const destAbs = expandPath(mapped, ctx);
     try {
       await fs.promises.mkdir(path.dirname(destAbs), { recursive: true });
       if (f.merge) {
@@ -281,10 +297,9 @@ async function executeImportInner(
         let src = writtenByKey.get(f.sameAs);
         if (!src || !fs.existsSync(src)) {
           // 主条目未导入时，尝试从本机已写入位置复制；否则告警跳过
-          src = expandPath(
-            handle.entries.files.find((x) => x.key === f.sameAs)?.dest ?? '',
-            ctx,
-          );
+        src = toAbs(
+          handle.entries.files.find((x) => x.key === f.sameAs)?.dest ?? '',
+        );
         }
         if (src && fs.existsSync(src)) {
           await fs.promises.copyFile(src, destAbs);
@@ -303,6 +318,7 @@ async function executeImportInner(
         destAbs,
         handle.entries.sourcePathContext,
         ctx,
+        pathMap,
       );
       if (changes > 0) {
         report.warnings.push(`已按目标机器改写路径（${changes} 处）: ${f.dest}`);
