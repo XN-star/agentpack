@@ -131,7 +131,7 @@ export default function ImportTab() {
         <>
           <section className="card">
             <div className="field">
-              <label>1. 选择导出文件（.agentpack）</label>
+              <label>1. 选择导入文件（.agentpack）</label>
               <div className="row">
                 <input type="text" value={packPath} readOnly placeholder="尚未选择文件" />
                 <button className="btn" onClick={() => void chooseFile()}>

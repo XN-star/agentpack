@@ -200,7 +200,7 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
                     onClick={() => toggleCollapse(agent.id)}
                     title={collapsed.has(agent.id) ? '展开' : '折叠'}
                   >
-                    <svg className="chev" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="chev" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M5 9 L12 16 L19 9" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </button>
@@ -286,7 +286,7 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
                     onClick={() => toggleCollapse('manual')}
                     title={collapsed.has('manual') ? '展开' : '折叠'}
                   >
-                    <svg className="chev" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="chev" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M5 9 L12 16 L19 9" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </button>

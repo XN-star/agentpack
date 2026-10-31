@@ -116,7 +116,7 @@ function registerIpc(): void {
 
   ipcMain.handle('choose-pack-file', async () => {
     const r = await dialog.showOpenDialog(win!, {
-      title: '选择 .agentpack 导出文件',
+      title: '选择 .agentpack 导入文件',
       properties: ['openFile'],
       filters: [{ name: 'AgentPack 导出包', extensions: ['agentpack'] }],
     });

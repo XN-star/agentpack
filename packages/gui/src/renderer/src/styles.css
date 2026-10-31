@@ -141,6 +141,7 @@ body {
 }
 
 .sidebar-foot {
+  margin-top: auto;
   border-top: 1px solid var(--border);
   padding-top: 10px;
 }
@@ -255,8 +256,8 @@ body {
   background: transparent;
   cursor: pointer;
   color: var(--muted);
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -272,8 +273,8 @@ body {
 
 .card-toggle .chev {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 14px;
+  height: 14px;
   transition: transform 0.15s ease;
 }
 
