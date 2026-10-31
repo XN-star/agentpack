@@ -1,6 +1,6 @@
 {
   "name": "@agentpack/core",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "AgentPack 核心库：registry、扫描、加密打包、导入冲突处理",
   "license": "MIT",
   "main": "dist/index.js",

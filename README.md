@@ -6,12 +6,13 @@
 - **强加密**：密码派生密钥（scrypt）+ AES-256-GCM 全量加密，密钥不落盘；明文部分只有时间与来源系统等元信息，**不含任何条目清单**
 - **双模式**：图形界面（Electron）+ 命令行（批量迁移），共享同一核心库
 - **安全边界**：凭据类条目默认排除、需手动勾选；登录态/设备绑定项在界面中明确标注为不可迁移；导入前自动备份目标机器已有配置
+- **历史记录**：每次导入/导出自动记录日期、Agent、条目摘要、大小与文件路径到本机 `~/.agentpack/history.json`（仅元信息、不含任何配置内容），GUI「历史记录」页与 `agentpack history` 命令可查
 
 仅支持 Windows 10+。
 
 ## 安装
 
-- 双击 `packages/gui/release/AgentPack Setup 1.0.0.exe`，按向导安装（可选安装目录、自动创建桌面/开始菜单快捷方式）。
+- 双击 `packages/gui/release/AgentPack Setup 1.1.0.exe`，按向导安装（可选安装目录、自动创建桌面/开始菜单快捷方式）。
 - CLI 已随安装包内置：`<安装目录>\resources\agentpack.cmd`（复用应用自带运行时，无需安装 Node.js）。可把 `resources` 目录加入 PATH 后直接使用 `agentpack` 命令。
 
 ### 从源码构建
@@ -55,6 +56,7 @@ agentpack export -o 迁移.agentpack [--agent zcode,codex]
 agentpack verify 迁移.agentpack [--password-env VAR] # 校验完整性/密码
 agentpack import 迁移.agentpack -s backup|overwrite|skip
                     [--agent ...] [--dry-run] [--backup-dir <dir>]
+agentpack history [--limit N] [--json] [--clear]    # 查看/清空导入导出记录
 ```
 
 - 密码输入为静音回显；脚本化场景一律用 `--password-env`，避免密码进入命令历史

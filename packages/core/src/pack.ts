@@ -13,6 +13,7 @@ import { AppError } from './errors';
 import { hashThrough, sha256OfBuffer } from './hash';
 import { expandPath } from './paths';
 import { collectItemFiles } from './scanner';
+import { appendHistory, makeEntry } from './history';
 import { CORE_VERSION } from './version';
 import { ZipWriter } from './zip';
 import type {
@@ -218,6 +219,21 @@ export async function exportPack(opts: ExportOptions): Promise<ExportResult> {
 
     const outSize = (await fs.promises.stat(outAbs)).size;
     opts.onProgress?.({ phase: 'done' });
+    appendHistory(
+      makeEntry({
+        action: 'export',
+        status: 'ok',
+        agents: [...new Set(migratable.map((i) => i.agentName))],
+        items: migratable.map((i) => i.label).slice(0, 50),
+        itemCount: migratable.length,
+        fileCount: seq,
+        bytes: totalBytes,
+        path: outAbs,
+        message: opts.machineName
+          ? `记录来源机器：${opts.machineName}`
+          : undefined,
+      }),
+    );
     return {
       manifest,
       entries: doc,
@@ -225,6 +241,22 @@ export async function exportPack(opts: ExportOptions): Promise<ExportResult> {
       totalBytes,
       outSize,
     };
+  } catch (e) {
+    const migratable = opts.items.filter((i) => i.migratable && i.exists);
+    appendHistory(
+      makeEntry({
+        action: 'export',
+        status: 'failed',
+        agents: [...new Set(migratable.map((i) => i.agentName))],
+        items: migratable.map((i) => i.label).slice(0, 50),
+        itemCount: migratable.length,
+        fileCount: 0,
+        bytes: 0,
+        path: path.resolve(opts.outPath),
+        message: (e as Error)?.message ?? String(e),
+      }),
+    );
+    throw e;
   } finally {
     await fs.promises.rm(tmp, { recursive: true, force: true }).catch(() => {});
   }

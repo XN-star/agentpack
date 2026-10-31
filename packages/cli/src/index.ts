@@ -10,6 +10,7 @@ import { Command } from 'commander';
 import {
   AppError,
   addManualPath,
+  clearHistory,
   defaultPathContext,
   executeImport,
   exportPack,
@@ -18,6 +19,7 @@ import {
   loadRegistries,
   openPack,
   previewImport,
+  readHistory,
   readManifest,
   scanRegistries,
   verifyPack,
@@ -200,7 +202,7 @@ const program = new Command();
 program
   .name('agentpack')
   .description('AI Agent 配置安全迁移工具（离线 .agentpack 格式）')
-  .version('1.0.0');
+  .version('1.1.0');
 
 program
   .command('scan')
@@ -398,6 +400,7 @@ program
             ctx,
             decisions,
             backupRoot: opts.backupDir ? path.resolve(opts.backupDir) : undefined,
+            packPath: path.resolve(file),
             onProgress: (p) => {
               if (p.phase === 'write' && p.current && p.files !== undefined && p.totalFiles) {
                 process.stdout.write(`\r写入 ${p.files}/${p.totalFiles}`);
@@ -438,6 +441,39 @@ program
       }
     },
   );
+
+program
+  .command('history')
+  .description('查看/清空导入导出历史记录（~/.agentpack/history.json）')
+  .option('-n, --limit <n>', '显示条数', '20')
+  .option('--json', '以 JSON 输出')
+  .option('--clear', '清空全部记录')
+  .action(async (opts: { limit: string; json?: boolean; clear?: boolean }) => {
+    if (opts.clear) {
+      clearHistory();
+      console.log('已清空历史记录');
+      return;
+    }
+    const list = readHistory(Number(opts.limit) || 20);
+    if (opts.json) {
+      console.log(JSON.stringify(list, null, 2));
+      return;
+    }
+    if (list.length === 0) {
+      console.log('暂无记录');
+      return;
+    }
+    for (const e of list) {
+      const mark = e.status === 'ok' ? '✔' : '✖';
+      const action = e.action === 'export' ? '导出' : '导入';
+      const time = new Date(e.time).toLocaleString();
+      console.log(
+        `${mark} ${time} [${action}] ${(e.agents.join('、') || '-')} — ${e.itemCount} 条目 / ${formatBytes(e.bytes)}` +
+          (e.status === 'failed' ? ` — 失败：${e.message ?? ''}` : ''),
+      );
+      console.log(`    ${e.path}`);
+    }
+  });
 
 program.parseAsync(process.argv).catch((e) => {
   console.error(e);

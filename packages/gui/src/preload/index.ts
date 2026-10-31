@@ -12,6 +12,8 @@ const api = {
     ipcRenderer.invoke('import-preview', payload),
   importExecute: (payload: unknown) =>
     ipcRenderer.invoke('import-execute', payload),
+  getHistory: () => ipcRenderer.invoke('get-history'),
+  clearHistory: () => ipcRenderer.invoke('clear-history'),
   onExportProgress: (cb: (p: unknown) => void) => {
     const listener = (_e: unknown, p: unknown) => cb(p);
     ipcRenderer.on('export-progress', listener);

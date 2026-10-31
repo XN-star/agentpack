@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { AppError } from './errors';
+import { appendHistory, makeEntry } from './history';
 import { expandPath } from './paths';
 import { maybeRewriteFile } from './transformers';
 import type { OpenPackHandle } from './unpack';
@@ -72,6 +73,8 @@ export interface ImportOptions {
   decisions: Record<string, ConflictStrategy>;
   /** 备份根目录；默认 ~/agentpack-backups/<时间戳>/ */
   backupRoot?: string;
+  /** 包文件路径（仅用于历史记录） */
+  packPath?: string;
   /** 为 true 时只演练不写盘 */
   dryRun?: boolean;
   onProgress?: (p: ImportProgress) => void;
@@ -92,8 +95,32 @@ function timestampForDir(): string {
  * 2) 写入阶段 —— 从内部 zip 解出各文件（sameAs 条目从已写入的主文件复制），
  *    文本文件应用路径改写 transformer
  * 锁定/无权限的文件跳过并记入警告，不中断整体导入。
+ * 成功/失败的导入会写入本地历史记录（dry-run 除外）。
  */
 export async function executeImport(
+  opts: ImportOptions,
+): Promise<ImportReport> {
+  try {
+    return await executeImportInner(opts);
+  } catch (e) {
+    appendHistory(
+      makeEntry({
+        action: 'import',
+        status: 'failed',
+        agents: [],
+        items: [],
+        itemCount: 0,
+        fileCount: 0,
+        bytes: 0,
+        path: opts.packPath ?? '未知包文件',
+        message: (e as Error)?.message ?? String(e),
+      }),
+    );
+    throw e;
+  }
+}
+
+async function executeImportInner(
   opts: ImportOptions,
 ): Promise<ImportReport> {
   const { handle, ctx } = opts;
@@ -313,6 +340,23 @@ export async function executeImport(
   }
 
   opts.onProgress?.({ phase: 'done' });
+  if (!opts.dryRun) {
+    appendHistory(
+      makeEntry({
+        action: 'import',
+        status: 'ok',
+        agents: [...new Set(selected.map((i) => i.agentName))],
+        items: selected.map((i) => i.label).slice(0, 50),
+        itemCount: selected.length,
+        fileCount: report.written,
+        bytes: report.bytesWritten,
+        path: opts.packPath ?? '未知包文件',
+        message: report.backupPath
+          ? `已备份目标原配置到 ${report.backupPath}`
+          : undefined,
+      }),
+    );
+  }
   return report;
 }
 

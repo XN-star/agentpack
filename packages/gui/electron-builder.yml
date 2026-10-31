@@ -15,6 +15,7 @@ files:
 asar: true
 
 win:
+  icon: build/icon.ico
   target:
     - target: nsis
       arch:

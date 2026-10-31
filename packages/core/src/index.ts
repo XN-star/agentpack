@@ -10,5 +10,6 @@ export * from './transformers';
 export * from './pack';
 export * from './unpack';
 export * from './import';
+export * from './history';
 export * from './zip';
 export { CORE_VERSION } from './version';

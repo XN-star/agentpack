@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ScanResult } from '@agentpack/core';
 import ExportTab from './ExportTab';
 import ImportTab from './ImportTab';
+import HistoryTab from './HistoryTab';
 
 type Theme = 'light' | 'dark';
 
@@ -16,7 +17,7 @@ function initTheme(): Theme {
 }
 
 export default function App() {
-  const [tab, setTab] = useState<'export' | 'import'>('export');
+  const [tab, setTab] = useState<'export' | 'import' | 'history'>('export');
   const [scan, setScan] = useState<ScanResult | null>(null);
   const [scanning, setScanning] = useState(false);
   const [filter, setFilter] = useState<string | null>(null);
@@ -73,7 +74,26 @@ export default function App() {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <span className="logo">⇄</span>
+          <span className="logo">
+            <svg width="20" height="20" viewBox="0 0 512 512" aria-hidden="true">
+              <defs>
+                <linearGradient id="brand-g" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#2F6BFF" />
+                  <stop offset="0.55" stop-color="#5B54F0" />
+                  <stop offset="1" stop-color="#7B3FF2" />
+                </linearGradient>
+              </defs>
+              <rect x="32" y="32" width="448" height="448" rx="104" fill="url(#brand-g)" />
+              <g stroke="#fff" strokeWidth="34" strokeLinecap="round" strokeLinejoin="round" fill="none">
+                <path d="M150 196 H322" />
+                <path d="M322 196 l-46 -44" />
+                <path d="M322 196 l-46 44" />
+                <path d="M362 316 H190" />
+                <path d="M190 316 l46 -44" />
+                <path d="M190 316 l46 44" />
+              </g>
+            </svg>
+          </span>
           <span>
             AgentPack
             <span className="brand-sub">AI Agent 配置安全转场</span>
@@ -92,6 +112,12 @@ export default function App() {
             onClick={() => setTab('import')}
           >
             导入配置
+          </button>
+          <button
+            className={tab === 'history' ? 'tab active' : 'tab'}
+            onClick={() => setTab('history')}
+          >
+            历史记录
           </button>
         </nav>
 
@@ -153,6 +179,7 @@ export default function App() {
             />
           )}
           {tab === 'import' && <ImportTab />}
+          {tab === 'history' && <HistoryTab />}
         </main>
       </div>
 

@@ -21,6 +21,8 @@ cp -r "$REPO/packages/gui/out" "$STAGE_POSIX/packages/gui/out"
 cp -r "$REPO/packages/gui/build" "$STAGE_POSIX/packages/gui/build"
 cp "$REPO/packages/gui/electron-builder.yml" "$STAGE_POSIX/packages/gui/"
 cp "$REPO/packages/gui/build/standalone-package.json" "$STAGE_POSIX/packages/gui/package.json"
+# 版本号跟随仓库根 package.json
+node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));j.version=JSON.parse(fs.readFileSync(process.argv[2],'utf8')).version;fs.writeFileSync(process.argv[1],JSON.stringify(j,null,2));console.log('打包版本:',j.version)" "$(cygpath -w "$STAGE_POSIX/packages/gui/package.json")" "$(cygpath -w "$REPO/package.json")"
 cp -r "$REPO/registry" "$STAGE_POSIX/registry"
 mkdir -p "$STAGE_POSIX/packages/cli"
 cp -r "$REPO/packages/cli/dist" "$STAGE_POSIX/packages/cli/dist"
@@ -30,8 +32,9 @@ cd "$STAGE_POSIX/packages/gui"
 npm install --no-audit --no-fund
 npx electron-builder --win
 
-# 3) 产物拷回仓库
+# 3) 产物拷回仓库（清掉旧版本安装包，避免混淆）
 mkdir -p "$REPO/packages/gui/release"
+rm -f "$REPO/packages/gui/release/"*.exe "$REPO/packages/gui/release/"*.blockmap
 cp -f "$STAGE_POSIX/packages/gui/release/"*.exe "$REPO/packages/gui/release/" || true
 cp -f "$STAGE_POSIX/packages/gui/release/"*.blockmap "$REPO/packages/gui/release/" || true
 

@@ -196,6 +196,27 @@ export interface EntriesDoc {
 
 export type ConflictStrategy = 'overwrite' | 'skip' | 'backup';
 
+/** 导入/导出历史记录（仅元信息，不含配置内容） */
+export interface HistoryEntry {
+  id: string;
+  /** ISO 时间 */
+  time: string;
+  action: 'export' | 'import';
+  status: 'ok' | 'failed';
+  /** agent 名称列表 */
+  agents: string[];
+  /** 条目标签（最多 50 条） */
+  items: string[];
+  itemCount: number;
+  fileCount: number;
+  /** 导出=原始总字节；导入=写入字节 */
+  bytes: number;
+  /** 导出文件路径 / 包文件路径 */
+  path: string;
+  /** 补充信息（失败原因、备份目录等） */
+  message?: string;
+}
+
 export interface ImportPreviewItem {
   item: PackedItemEntry;
   /** 目标机器绝对路径 */

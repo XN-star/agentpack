@@ -208,6 +208,12 @@ function registerIpc(): void {
     },
   );
 
+  ipcMain.handle('get-history', async () => core.readHistory(200));
+
+  ipcMain.handle('clear-history', async () => {
+    core.clearHistory();
+  });
+
   ipcMain.handle('get-default-out-dir', () => {
     const docs = app.getPath('documents');
     return fs.existsSync(docs) ? docs : os.homedir();

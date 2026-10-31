@@ -1,5 +1,6 @@
 import type {
   ConflictStrategy,
+  HistoryEntry,
   ImportPreviewItem,
   ImportReport,
   ImportProgress,
@@ -57,6 +58,8 @@ export interface AgentPackApi {
     password: string;
     decisions: Record<string, ConflictStrategy>;
   }): Promise<ImportExecuteResult | IpcError>;
+  getHistory(): Promise<HistoryEntry[]>;
+  clearHistory(): Promise<void>;
   onExportProgress(cb: (p: PackProgress) => void): () => void;
   onImportProgress(cb: (p: ImportProgress) => void): () => void;
 }
