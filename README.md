@@ -1,5 +1,7 @@
 # AgentPack — AI Agent 配置安全转场
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 把本机已安装的 AI Agent（ZCode、Codex、Trae CN、Hermes、OpenCode、WorkBuddy、**Claude Code、Cursor、Qoder、CherryStudio、Pi**）的配置**安全迁移到其他电脑**。
 
 - **离线迁移**：导出为单一加密文件（`.agentpack`），U 盘/局域网传输均可，不经过任何第三方服务器
@@ -12,7 +14,8 @@
 
 ## 安装
 
-- 双击 `packages/gui/release/AgentPack Setup 1.1.0.exe`，按向导安装（可选安装目录、自动创建桌面/开始菜单快捷方式）。
+前往 [GitHub Releases](../../releases) 下载最新 `AgentPack Setup x.x.x.exe`，双击安装（可选安装目录、自动创建桌面/开始菜单快捷方式）。
+
 - CLI 已随安装包内置：`<安装目录>\resources\agentpack.cmd`（复用应用自带运行时，无需安装 Node.js）。可把 `resources` 目录加入 PATH 后直接使用 `agentpack` 命令。
 
 ### 从源码构建
@@ -121,4 +124,4 @@ npm test             # vitest（含 scan→export→import 端到端集成测试
 
 ## 许可
 
-MIT
+本项目基于 [MIT](LICENSE) 许可证开源。
