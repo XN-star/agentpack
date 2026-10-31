@@ -1,6 +1,6 @@
 # AgentPack — AI Agent 配置安全转场
 
-把本机已安装的 AI Agent（ZCode、Codex、Trae CN、Hermes、OpenCode、WorkBuddy）的配置**安全迁移到其他电脑**。
+把本机已安装的 AI Agent（ZCode、Codex、Trae CN、Hermes、OpenCode、WorkBuddy、**Claude Code、Cursor、Qoder、CherryStudio、Pi**）的配置**安全迁移到其他电脑**。
 
 - **离线迁移**：导出为单一加密文件（`.agentpack`），U 盘/局域网传输均可，不经过任何第三方服务器
 - **强加密**：密码派生密钥（scrypt）+ AES-256-GCM 全量加密，密钥不落盘；明文部分只有时间与来源系统等元信息，**不含任何条目清单**
@@ -60,7 +60,7 @@ agentpack import 迁移.agentpack -s backup|overwrite|skip
 - 密码输入为静音回显；脚本化场景一律用 `--password-env`，避免密码进入命令历史
 - 退出码：`0` 成功 / `2` 密码错误或强度不足 / `3` 存在跳过或失败的文件 / `4` 包损坏或格式不支持
 
-## 支持的 Agent 清单（v1）
+## 支持的 Agent 清单（v1.1）
 
 | Agent | 配置根 | 可迁移项 | 凭据（默认排除） | 不可迁移（自动排除） |
 |---|---|---|---|---|
@@ -70,8 +70,13 @@ agentpack import 迁移.agentpack -s backup|overwrite|skip
 | Hermes | `%LOCALAPPDATA%\hermes` + `%APPDATA%\Hermes` | config.yaml、skills/、memories/、plugins/、hooks/、cron/、各 *.db、Roaming 侧 *.json 配置 | auth.json、.env、secure-token-storage.json | 各类 cache/、bin/、node/、installs/、runtime/、hermes-agent/、backups/、Electron 壳 |
 | OpenCode | `~/.config/opencode` + `~/.opencode` + `~/.local/share/opencode` + `%APPDATA%\ai.opencode.desktop` | opencode.json(c)、agent-team/、skills/、opencode.db、opencode.settings、drafts.sqlite | auth.json | node_modules、browser-profile、repos/snapshot/log、WebView 缓存 |
 | WorkBuddy | `%APPDATA%\WorkBuddy` | User/settings.json、User/snippets/、globalStorage/storage.json、automations/、codebuddy-sessions.vscdb、languagepacks.json、User/History/（可选） | globalStorage 内扩展登录态 | machineid、Local State、state.vscdb、全部 Cache/Local Storage/Cookies、workspaceStorage |
+| **Claude Code** | `~/.claude` + `~/.claude.json` | settings、settings.local、config、plugins/config、agents/、skills/、commands/、output-styles/；**.claude.json 仅提取 projects/pluginUsage 子集，导入深合并保留目标账号态** | —（无独立凭据文件） | .claude.json 其余字段（userID/machineID/订阅/遥测）、projects 会话、statsig/telemetry |
+| **Cursor** | `~/.cursor` + `%APPDATA%\Cursor` | hooks.json、argv.json、skills/、扩展清单 extensions.json；桌面版 settings/mcp.json/keybindings/snippets | — | ai-tracking/、extensions 缓存、state.vscdb、machineid、Cookies |
+| **Qoder** | `~/.qoder` + `%APPDATA%\QoderCN` | settings/mcp/argv/.config.json、rules/、skills/、memories/、.models/、User/settings、snippets | .auth/user | .auth/id、machine_id（设备绑定）、bin/(415M)、extensions/、plugins/、state.vscdb、QoderWork CN（二期） |
+| **CherryStudio** | `%APPDATA%\CherryStudio` | Data/Agents/、Data/Skills/、KnowledgeBase/Files（可选） | **Data/cherrystudio.sqlite（含供应商 API Key）**、Credentials/cherry-account.json | ~/.cherrystudio/bin（282M 运行时）、浏览器态 |
+| **Pi** | `~/.pi/agent` | settings.json、models-store.json | auth.json | bin/（随附工具）、sessions/ |
 
-二期计划：Claude Code/Desktop、Cursor、Qwen Code、Continue、DeepSeek 等——新增 agent 只需在 `registry/` 添加一个 JSON 描述文件，无需修改核心代码。
+二期计划：Gemini CLI、Windsurf、Zed、VS Code(+Copilot)、iFlow、通义灵码、CodeBuddy、Continue 等——新增 agent 只需在 `registry/` 添加一个 JSON 描述文件，无需修改核心代码。
 
 ## `.agentpack` 格式与安全设计
 

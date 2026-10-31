@@ -12,7 +12,7 @@ STAGE_WIN="${AGENTPACK_STAGE:-C:\AgentPackDist}"
 STAGE_POSIX=$(cygpath -u "$STAGE_WIN")
 
 echo "仓库: $REPO"
-echo "打包暂存目录: $STAGE"
+echo "打包暂存目录: $STAGE_WIN"
 
 # 1) 准备暂存目录（保持 electron-builder.yml 的 ../../registry 相对布局）
 rm -rf "$STAGE_POSIX"

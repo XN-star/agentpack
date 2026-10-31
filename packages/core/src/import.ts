@@ -4,7 +4,7 @@ import { AppError } from './errors';
 import { expandPath } from './paths';
 import { maybeRewriteFile } from './transformers';
 import type { OpenPackHandle } from './unpack';
-import { extractEntryToFileFast } from './zip';
+import { extractEntryToFileFast, readEntryBuffer } from './zip';
 import type {
   ConflictStrategy,
   ImportPreviewItem,
@@ -13,6 +13,27 @@ import type {
   PathContext,
   PackedFileEntry,
 } from './types';
+
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return !!v && typeof v === 'object' && !Array.isArray(v);
+}
+
+/** 深合并：对象递归合并，数组与标量以 patch 为准 */
+function deepMerge(
+  base: Record<string, unknown>,
+  patch: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...base };
+  for (const [k, v] of Object.entries(patch)) {
+    const cur = out[k];
+    if (isPlainObject(cur) && isPlainObject(v)) {
+      out[k] = deepMerge(cur, v);
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
+}
 
 function isUnsafeDest(dest: string): boolean {
   return dest.split('/').includes('..');
@@ -189,7 +210,47 @@ export async function executeImport(
     const destAbs = expandPath(f.dest, ctx);
     try {
       await fs.promises.mkdir(path.dirname(destAbs), { recursive: true });
-      if (f.sameAs) {
+      if (f.merge) {
+        // json-fields 条目：读取包子集，与目标已有 JSON 深合并（保留目标账号态等其余字段）
+        const srcBuf = await readEntryBuffer(handle.innerZipPath, f.key);
+        let subset: unknown;
+        try {
+          subset = JSON.parse(srcBuf.toString('utf8'));
+        } catch {
+          report.warnings.push(`包内 JSON 解析失败，已跳过: ${f.dest}`);
+          report.skipped++;
+          continue;
+        }
+        if (!isPlainObject(subset)) {
+          report.warnings.push(`包内子集不是 JSON 对象，已跳过: ${f.dest}`);
+          report.skipped++;
+          continue;
+        }
+        let targetObj: Record<string, unknown> = {};
+        let targetInvalid = false;
+        try {
+          const parsed = JSON.parse(await fs.promises.readFile(destAbs, 'utf8'));
+          if (!isPlainObject(parsed)) {
+            targetInvalid = true;
+          } else {
+            targetObj = parsed;
+          }
+        } catch {
+          // 目标不存在或暂不可解析：按全新写入处理
+          targetObj = {};
+        }
+        if (targetInvalid) {
+          report.warnings.push(`目标文件不是 JSON 对象，已跳过合并: ${f.dest}`);
+          report.skipped++;
+          continue;
+        }
+        const merged = deepMerge(targetObj, subset);
+        await fs.promises.writeFile(
+          destAbs,
+          JSON.stringify(merged, null, 2),
+          'utf8',
+        );
+      } else if (f.sameAs) {
         let src = writtenByKey.get(f.sameAs);
         if (!src || !fs.existsSync(src)) {
           // 主条目未导入时，尝试从本机已写入位置复制；否则告警跳过

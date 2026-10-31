@@ -30,7 +30,12 @@ export interface RegistryItem {
   label: string;
   /** 相对 root.base 的路径，正斜杠 */
   path: string;
-  type: 'file' | 'dir';
+  /**
+   * - file/dir：整文件/整目录
+   * - json-fields：只提取 JSON 顶层的指定字段（fields），导入时与目标文件深合并，
+   *   用于「配置与账号态混在同一文件」的场景（如 Claude Code 的 .claude.json）
+   */
+  type: 'file' | 'dir' | 'json-fields';
   category: Category;
   sensitivity: Sensitivity;
   defaultSelected: boolean;
@@ -40,6 +45,8 @@ export interface RegistryItem {
   note?: string;
   /** 目录内排除的 glob（相对条目根） */
   exclude?: string[];
+  /** type=json-fields：要提取的顶层字段名 */
+  fields?: string[];
   /** 符号链接处理：dereference（默认）| skip */
   linkPolicy?: 'dereference' | 'skip';
 }
@@ -86,7 +93,7 @@ export interface ScannedItem {
   agentName: string;
   itemId: string;
   label: string;
-  type: 'file' | 'dir';
+  type: 'file' | 'dir' | 'json-fields';
   category: Category;
   sensitivity: Sensitivity;
   defaultSelected: boolean;
@@ -97,6 +104,8 @@ export interface ScannedItem {
   placeholderPath: string;
   /** 本机绝对路径（已解引用） */
   targetAbs: string;
+  /** type=json-fields：要提取的顶层字段 */
+  fields?: string[];
   exists: boolean;
   size: number;
   fileCount: number;
@@ -158,6 +167,8 @@ export interface PackedFileEntry {
   sha256: string;
   /** 内容与另一条目相同（按内容去重），值为源条目的 key */
   sameAs?: string;
+  /** json-fields 条目：导入时与目标已有 JSON 深合并（不整文件覆盖） */
+  merge?: boolean;
 }
 
 export interface PackedItemEntry {
@@ -166,7 +177,7 @@ export interface PackedItemEntry {
   agentName: string;
   itemId: string;
   label: string;
-  type: 'file' | 'dir';
+  type: 'file' | 'dir' | 'json-fields';
   category: Category;
   sensitivity: Sensitivity;
   /** 展示用：条目占位符路径 */

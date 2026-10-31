@@ -1,0 +1,73 @@
+{
+  "id": "cherrystudio",
+  "name": "CherryStudio",
+  "description": "CherryStudio 桌面客户端",
+  "restartHint": "完全退出 CherryStudio 后重新启动",
+  "roots": [
+    {
+      "id": "cherrystudio-roaming",
+      "base": "{{appdata}}/CherryStudio",
+      "items": [
+        {
+          "id": "app-data",
+          "label": "应用设置与供应商配置（Data/cherrystudio.sqlite，含 API Key）",
+          "path": "Data/cherrystudio.sqlite",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "secret",
+          "defaultSelected": false,
+          "note": "供应商 API Key 存于此库，迁移前请完全退出 CherryStudio"
+        },
+        {
+          "id": "agents",
+          "label": "智能体配置（Data/Agents/）",
+          "path": "Data/Agents",
+          "type": "dir",
+          "category": "prompt",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（Data/Skills/）",
+          "path": "Data/Skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "knowledge-base",
+          "label": "知识库（Data/KnowledgeBase/，可选）",
+          "path": "Data/KnowledgeBase",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "files",
+          "label": "文件库（Data/Files/，可选）",
+          "path": "Data/Files",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "account",
+          "label": "账号凭据（Credentials/cherry-account.json）",
+          "path": "Credentials/cherry-account.json",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "~/.cherrystudio/bin（约 282MB）", "reason": "bun/uv/rg 等运行时，重装自动生成" },
+    { "path": "Local Storage、IndexedDB、Cookies", "reason": "登录态，不可迁移" }
+  ]
+}

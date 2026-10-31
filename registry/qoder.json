@@ -1,0 +1,156 @@
+{
+  "id": "qoder",
+  "name": "Qoder",
+  "description": "Qoder / QoderCN（阿里系 AI IDE）",
+  "restartHint": "完全退出 Qoder / QoderCN 后重新启动",
+  "roots": [
+    {
+      "id": "qoder-home",
+      "base": "{{home}}/.qoder",
+      "items": [
+        {
+          "id": "settings",
+          "label": "主配置（settings.json）",
+          "path": "settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "mcp",
+          "label": "MCP 配置（mcp.json）",
+          "path": "mcp.json",
+          "type": "file",
+          "category": "mcp",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "argv",
+          "label": "启动参数（argv.json）",
+          "path": "argv.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "dot-config",
+          "label": "内部配置（.config.json）",
+          "path": ".config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "rules",
+          "label": "用户规则（rules/）",
+          "path": "rules",
+          "type": "dir",
+          "category": "rules",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（skills/，共享库符号链接将解引用去重）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "linkPolicy": "dereference"
+        },
+        {
+          "id": "memories",
+          "label": "记忆（memories/）",
+          "path": "memories",
+          "type": "dir",
+          "category": "memory",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "models",
+          "label": "模型配置（.models/）",
+          "path": ".models",
+          "type": "dir",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "projects",
+          "label": "项目记录（projects/，可选）",
+          "path": "projects",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "canvas",
+          "label": "画布（canvas/，可选）",
+          "path": "canvas",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": false
+        },
+        {
+          "id": "auth-user",
+          "label": "登录凭据（.auth/user）",
+          "path": ".auth/user",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    },
+    {
+      "id": "qoder-roaming",
+      "base": "{{appdata}}/QoderCN",
+      "items": [
+        {
+          "id": "user-settings",
+          "label": "编辑器设置（User/settings.json）",
+          "path": "User/settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-snippets",
+          "label": "代码片段（User/snippets/）",
+          "path": "User/snippets",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "storage-json",
+          "label": "全局存储（User/globalStorage/storage.json）",
+          "path": "User/globalStorage/storage.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": ".auth/id、.auth/machine_id", "reason": "设备绑定标识，不可迁移" },
+    { "path": "bin/（约 415MB）、.bin/", "reason": "运行时组件，重装自动生成" },
+    { "path": "extensions/（约 109MB）", "reason": "扩展缓存，重装自动下载" },
+    { "path": "plugins/（约 35MB）", "reason": "插件缓存" },
+    { "path": "logs/、cache/、dynamic-texts.json", "reason": "日志与缓存" },
+    { "path": "User/globalStorage/state.vscdb、User/workspaceStorage/", "reason": "界面状态与工作区数据" },
+    { "path": "%APPDATA%\\QoderWork CN（auth.dat 等）", "reason": "独立产品（QoderWork），二期支持" }
+  ]
+}

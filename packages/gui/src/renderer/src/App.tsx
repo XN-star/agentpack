@@ -3,13 +3,32 @@ import type { ScanResult } from '@agentpack/core';
 import ExportTab from './ExportTab';
 import ImportTab from './ImportTab';
 
+type Theme = 'light' | 'dark';
+
+function initTheme(): Theme {
+  const saved = localStorage.getItem('agentpack-theme');
+  if (saved === 'light' || saved === 'dark') {
+    return saved;
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+}
+
 export default function App() {
   const [tab, setTab] = useState<'export' | 'import'>('export');
   const [scan, setScan] = useState<ScanResult | null>(null);
   const [scanning, setScanning] = useState(false);
+  const [filter, setFilter] = useState<string | null>(null);
+  const [theme, setTheme] = useState<Theme>(initTheme);
   const [toast, setToast] = useState<{ kind: 'error' | 'info'; text: string } | null>(
     null,
   );
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('agentpack-theme', theme);
+  }, [theme]);
 
   const runScan = useCallback(async () => {
     setScanning(true);
@@ -45,17 +64,23 @@ export default function App() {
     }
   };
 
+  const openAgent = (id: string | null) => {
+    setFilter(id);
+    setTab('export');
+  };
+
   return (
     <div className="app">
-      <header className="topbar">
+      <aside className="sidebar">
         <div className="brand">
           <span className="logo">⇄</span>
           <span>
             AgentPack
-            <span className="brand-sub">AI Agent 配置安全转场 · 离线加密</span>
+            <span className="brand-sub">AI Agent 配置安全转场</span>
           </span>
         </div>
-        <nav className="tabs">
+
+        <nav className="side-nav">
           <button
             className={tab === 'export' ? 'tab active' : 'tab'}
             onClick={() => setTab('export')}
@@ -69,19 +94,67 @@ export default function App() {
             导入配置
           </button>
         </nav>
-      </header>
 
-      <main className="content">
-        {tab === 'export' && (
-          <ExportTab
-            scan={scan}
-            scanning={scanning}
-            onRescan={() => void runScan()}
-            onAddManual={() => void addManual()}
-          />
+        {tab === 'export' && scan && (
+          <div className="agent-filter">
+            <div className="filter-title">按 Agent 查看</div>
+            <button
+              className={filter === null ? 'agent-item active' : 'agent-item'}
+              onClick={() => openAgent(null)}
+            >
+              <span className="dot dot-all" />
+              全部
+            </button>
+            {scan.agents.map((a) => (
+              <button
+                key={a.id}
+                className={filter === a.id ? 'agent-item active' : 'agent-item'}
+                onClick={() => openAgent(a.id)}
+              >
+                <span className={a.found ? 'dot dot-on' : 'dot dot-off'} />
+                <span className="agent-name">{a.name}</span>
+                {a.found && a.items.length > 0 && (
+                  <span className="agent-count">{a.items.length}</span>
+                )}
+              </button>
+            ))}
+            {scan.manualItems.length > 0 && (
+              <button
+                className={filter === 'manual' ? 'agent-item active' : 'agent-item'}
+                onClick={() => openAgent('manual')}
+              >
+                <span className="dot dot-all" />
+                手动添加
+              </button>
+            )}
+          </div>
         )}
-        {tab === 'import' && <ImportTab />}
-      </main>
+
+        <div className="sidebar-foot">
+          <button
+            className="btn theme-toggle"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            title="切换浅色/深色主题"
+          >
+            {theme === 'dark' ? '☀ 浅色模式' : '☾ 深色模式'}
+          </button>
+        </div>
+      </aside>
+
+      <div className="main">
+        <main className="content">
+          {tab === 'export' && (
+            <ExportTab
+              scan={scan}
+              scanning={scanning}
+              filter={filter}
+              onRescan={() => void runScan()}
+              onAddManual={() => void addManual()}
+            />
+          )}
+          {tab === 'import' && <ImportTab />}
+        </main>
+      </div>
 
       {toast && <div className={`toast toast-${toast.kind}`}>{toast.text}</div>}
     </div>

@@ -10,7 +10,7 @@ import {
   validatePassword,
 } from './crypto';
 import { AppError } from './errors';
-import { hashThrough } from './hash';
+import { hashThrough, sha256OfBuffer } from './hash';
 import { expandPath } from './paths';
 import { collectItemFiles } from './scanner';
 import { CORE_VERSION } from './version';
@@ -93,7 +93,12 @@ export async function exportPack(opts: ExportOptions): Promise<ExportResult> {
 
     for (const item of migratable) {
       opts.onProgress?.({ phase: 'collect', itemLabel: item.label });
-      const collected = await collectItemFiles(item.targetAbs, item.type);
+      const collected = await collectItemFiles(
+        item.targetAbs,
+        item.type,
+        undefined,
+        item.fields,
+      );
       itemEntries.push({
         key: item.key,
         agentId: item.agentId,
@@ -111,9 +116,23 @@ export async function exportPack(opts: ExportOptions): Promise<ExportResult> {
         totalBytes += f.size;
         const key = `f${String(seq).padStart(6, '0')}`;
         const dest =
-          item.type === 'file'
-            ? item.placeholderPath
-            : joinPlaceholder(item.placeholderPath, f.rel);
+          item.type === 'dir'
+            ? joinPlaceholder(item.placeholderPath, f.rel)
+            : item.placeholderPath;
+        // json-fields：打包子集内容并标记 merge，导入时与目标文件深合并
+        if (f.content) {
+          const sha256 = sha256OfBuffer(f.content);
+          zw.addBuffer(key, f.content);
+          fileEntries.push({
+            key,
+            itemKey: item.key,
+            dest,
+            size: f.size,
+            sha256,
+            merge: true,
+          });
+          continue;
+        }
         let real: string;
         try {
           real = await fs.promises.realpath(f.abs);

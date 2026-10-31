@@ -1,0 +1,98 @@
+{
+  "id": "cursor",
+  "name": "Cursor",
+  "description": "Cursor（CLI 残留或桌面版）",
+  "restartHint": "重启 Cursor 桌面版 / CLI 会话后生效",
+  "roots": [
+    {
+      "id": "cursor-home",
+      "base": "{{home}}/.cursor",
+      "items": [
+        {
+          "id": "hooks",
+          "label": "钩子配置（hooks.json）",
+          "path": "hooks.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "argv",
+          "label": "启动参数（argv.json）",
+          "path": "argv.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（skills/，共享库符号链接将解引用去重）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "linkPolicy": "dereference"
+        },
+        {
+          "id": "extensions-list",
+          "label": "扩展清单（extensions/extensions.json）",
+          "path": "extensions/extensions.json",
+          "type": "file",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    },
+    {
+      "id": "cursor-roaming",
+      "base": "{{appdata}}/Cursor",
+      "items": [
+        {
+          "id": "user-settings",
+          "label": "编辑器设置（User/settings.json）",
+          "path": "User/settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-mcp",
+          "label": "MCP 配置（User/mcp.json）",
+          "path": "User/mcp.json",
+          "type": "file",
+          "category": "mcp",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-keybindings",
+          "label": "快捷键（User/keybindings.json）",
+          "path": "User/keybindings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "user-snippets",
+          "label": "代码片段（User/snippets/）",
+          "path": "User/snippets",
+          "type": "dir",
+          "category": "other",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "ai-tracking/（本地统计库）", "reason": "本地统计数据库" },
+    { "path": "extensions/ 缓存", "reason": "扩展缓存，重装自动下载" },
+    { "path": "桌面版 globalStorage/state.vscdb、workspaceStorage、machineid、Local State、Cookies", "reason": "界面状态、设备绑定与登录态，不可迁移" }
+  ]
+}

@@ -16,6 +16,8 @@ import type { ExportResultLite } from './api.d';
 interface Props {
   scan: ScanResult | null;
   scanning: boolean;
+  /** 侧边栏选择的 agent 过滤：null=全部，'manual'=手动添加 */
+  filter: string | null;
   onRescan: () => void;
   onAddManual: () => void;
 }
@@ -36,7 +38,7 @@ const PHASE_PERCENT: Record<string, number> = {
   done: 100,
 };
 
-export default function ExportTab({ scan, scanning, onRescan, onAddManual }: Props) {
+export default function ExportTab({ scan, scanning, filter, onRescan, onAddManual }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -177,7 +179,10 @@ export default function ExportTab({ scan, scanning, onRescan, onAddManual }: Pro
 
       {scan && (
         <div className="cards">
-          {scan.agents.map((agent) => (
+          {(filter && filter !== 'manual'
+            ? scan.agents.filter((a) => a.id === filter)
+            : scan.agents
+          ).map((agent) => (
             <section className="card" key={agent.id}>
               <header className="card-head">
                 <div>
@@ -253,7 +258,8 @@ export default function ExportTab({ scan, scanning, onRescan, onAddManual }: Pro
             </section>
           ))}
 
-          {scan.manualItems.length > 0 && (
+          {(filter === null || filter === 'manual') &&
+            scan.manualItems.length > 0 && (
             <section className="card">
               <header className="card-head">
                 <div>

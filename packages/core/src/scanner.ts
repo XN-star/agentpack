@@ -22,11 +22,41 @@ export interface CollectedFile {
   rel: string;
   size: number;
   isLink: boolean;
+  /** json-fields 条目：提取后的子集内容（打包时直接使用） */
+  content?: Buffer;
 }
 
 interface WalkStats {
   linkCount: number;
   warnings: Set<string>;
+}
+
+/**
+ * 提取 JSON 顶层白名单字段，生成子集文档。
+ * 用于「配置与账号态混在同一文件」的场景（如 Claude Code 的 .claude.json）。
+ */
+export function extractJsonFields(
+  targetAbs: string,
+  fields: string[],
+): { content: Buffer; size: number } {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(fs.readFileSync(targetAbs, 'utf8'));
+  } catch {
+    throw new Error(`JSON 解析失败: ${targetAbs}`);
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`JSON 顶层必须是对象: ${targetAbs}`);
+  }
+  const obj = parsed as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const name of fields) {
+    if (name in obj) {
+      out[name] = obj[name];
+    }
+  }
+  const content = Buffer.from(JSON.stringify(out, null, 2), 'utf8');
+  return { content, size: content.length };
 }
 
 async function walkDir(
@@ -92,12 +122,14 @@ async function walkDir(
 
 /**
  * 枚举一个条目下的全部文件（扫描与打包共用同一实现，保证清单一致）。
- * 目录条目会递归（解引用符号链接），文件条目返回单文件。
+ * 目录条目递归（解引用符号链接）；文件条目返回单文件；
+ * json-fields 条目返回提取后的白名单字段子集内容。
  */
 export async function collectItemFiles(
   targetAbs: string,
-  type: 'file' | 'dir',
+  type: 'file' | 'dir' | 'json-fields',
   exclude?: string[],
+  fields?: string[],
 ): Promise<{ files: CollectedFile[]; linkCount: number; warnings: string[] }> {
   const excluded = buildExcludeMatcher(type === 'dir' ? exclude : undefined);
   const out: CollectedFile[] = [];
@@ -113,6 +145,15 @@ export async function collectItemFiles(
       throw new Error(`期望文件但得到目录: ${targetAbs}`);
     }
     out.push({ abs: targetAbs, rel: '', size: st.size, isLink: false });
+  } else if (type === 'json-fields') {
+    if (!st.isFile()) {
+      throw new Error(`期望文件但得到目录: ${targetAbs}`);
+    }
+    if (!fields || fields.length === 0) {
+      throw new Error(`json-fields 条目缺少 fields 配置: ${targetAbs}`);
+    }
+    const { content, size } = extractJsonFields(targetAbs, fields);
+    out.push({ abs: targetAbs, rel: '', size, isLink: false, content });
   } else if (st.isDirectory()) {
     await walkDir(targetAbs, '', excluded, out, stats, 0);
   } else {
@@ -203,6 +244,14 @@ async function scanItemAt(
     if (item.type === 'file') {
       size = st.size;
       fileCount = 1;
+    } else if (item.type === 'json-fields') {
+      const { content, size: s } = extractJsonFields(
+        targetAbs,
+        item.fields ?? [],
+      );
+      size = s;
+      fileCount = 1;
+      void content;
     } else {
       const r = await collectItemFiles(targetAbs, 'dir', item.exclude);
       size = r.files.reduce((acc, f) => acc + f.size, 0);
@@ -229,6 +278,7 @@ async function scanItemAt(
     note: item.note,
     placeholderPath,
     targetAbs,
+    fields: item.fields,
     exists: true,
     size,
     fileCount,

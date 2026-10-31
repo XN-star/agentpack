@@ -1,0 +1,110 @@
+{
+  "id": "claude-code",
+  "name": "Claude Code",
+  "description": "Anthropic Claude Code CLI",
+  "restartHint": "重启 Claude Code 会话后生效",
+  "roots": [
+    {
+      "id": "claude-home",
+      "base": "{{home}}/.claude",
+      "items": [
+        {
+          "id": "settings",
+          "label": "用户设置（settings.json）",
+          "path": "settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "settings-local",
+          "label": "本地设置（settings.local.json）",
+          "path": "settings.local.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "config",
+          "label": "应用配置（config.json）",
+          "path": "config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "plugins-config",
+          "label": "插件配置（plugins/config.json）",
+          "path": "plugins/config.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "agents",
+          "label": "子代理定义（agents/）",
+          "path": "agents",
+          "type": "dir",
+          "category": "prompt",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "skills",
+          "label": "技能（skills/，共享库符号链接将解引用去重）",
+          "path": "skills",
+          "type": "dir",
+          "category": "skills",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "linkPolicy": "dereference"
+        },
+        {
+          "id": "commands",
+          "label": "自定义命令（commands/）",
+          "path": "commands",
+          "type": "dir",
+          "category": "prompt",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "output-styles",
+          "label": "输出样式（output-styles/）",
+          "path": "output-styles",
+          "type": "dir",
+          "category": "prompt",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        }
+      ]
+    },
+    {
+      "id": "claude-home-file",
+      "base": "{{home}}",
+      "items": [
+        {
+          "id": "claude-json-mcp",
+          "label": "MCP/项目配置（.claude.json 子集，不含账号与遥测）",
+          "path": ".claude.json",
+          "type": "json-fields",
+          "fields": ["projects", "pluginUsage"],
+          "category": "mcp",
+          "sensitivity": "normal",
+          "defaultSelected": true,
+          "note": "只提取 projects/pluginUsage 字段；导入时与目标机器的 .claude.json 深合并，登录态保留"
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": ".claude.json 其余字段", "reason": "userID/machineID/订阅态/遥测缓存等账号与设备信息，不可迁移" },
+    { "path": "projects/、sessions/、shell-snapshots/、todos/", "reason": "会话与运行数据" },
+    { "path": "statsig/、telemetry/", "reason": "实验与遥测缓存" },
+    { "path": "ide/、backups/", "reason": "IDE 集成与自动备份" }
+  ]
+}

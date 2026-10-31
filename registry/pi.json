@@ -1,0 +1,45 @@
+{
+  "id": "pi",
+  "name": "Pi",
+  "description": "pi 编码 agent",
+  "restartHint": "重启 pi 会话后生效",
+  "roots": [
+    {
+      "id": "pi-agent",
+      "base": "{{home}}/.pi/agent",
+      "items": [
+        {
+          "id": "settings",
+          "label": "主配置（settings.json）",
+          "path": "settings.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "models-store",
+          "label": "模型定义（models-store.json）",
+          "path": "models-store.json",
+          "type": "file",
+          "category": "settings",
+          "sensitivity": "normal",
+          "defaultSelected": true
+        },
+        {
+          "id": "auth",
+          "label": "登录凭据（auth.json）",
+          "path": "auth.json",
+          "type": "file",
+          "category": "credentials",
+          "sensitivity": "secret",
+          "defaultSelected": false
+        }
+      ]
+    }
+  ],
+  "nonMigratable": [
+    { "path": "bin/（约 4MB）", "reason": "随附工具，重装自动生成" },
+    { "path": "sessions/", "reason": "会话记录，不迁移" }
+  ]
+}

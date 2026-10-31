@@ -11,9 +11,14 @@ describe('registry 清单', () => {
     const regs = loadRegistries(REGISTRY_DIR);
     const ids = regs.map((r) => r.id).sort();
     expect(ids).toEqual([
+      'cherrystudio',
+      'claude-code',
       'codex',
+      'cursor',
       'hermes',
       'opencode',
+      'pi',
+      'qoder',
       'trae-cn',
       'workbuddy',
       'zcode',
