@@ -40,6 +40,15 @@ const PHASE_PERCENT: Record<string, number> = {
 
 export default function ExportTab({ scan, scanning, filter, onRescan, onAddManual }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  /** 折叠的卡片（agentId 或 'manual'），默认全部展开 */
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
+  const toggleCollapse = (key: string) => {
+    const next = new Set(collapsed);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    setCollapsed(next);
+  };
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [password, setPassword] = useState('');
@@ -186,6 +195,13 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
             <section className="card" key={agent.id}>
               <header className="card-head">
                 <div>
+                  <button
+                    className={collapsed.has(agent.id) ? 'card-toggle collapsed' : 'card-toggle'}
+                    onClick={() => toggleCollapse(agent.id)}
+                    title={collapsed.has(agent.id) ? '展开' : '折叠'}
+                  >
+                    <span className="chev">▾</span>
+                  </button>
                   <span className={agent.found ? 'dot dot-on' : 'dot dot-off'} />
                   <b>{agent.name}</b>
                   <span className="muted agent-id"> [{agent.id}]</span>
@@ -206,7 +222,7 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
               </header>
               {!agent.found ? (
                 <div className="muted card-empty">未在本机发现该 agent</div>
-              ) : (
+              ) : !collapsed.has(agent.id) ? (
                 <>
                   <ul className="items">
                     {agent.items.map((item: ScannedItem) => (
@@ -254,7 +270,7 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
                   )}
                   <div className="restart-hint">生效方式：{agent.restartHint}</div>
                 </>
-              )}
+              ) : null}
             </section>
           ))}
 
@@ -263,10 +279,18 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
             <section className="card">
               <header className="card-head">
                 <div>
+                  <button
+                    className={collapsed.has('manual') ? 'card-toggle collapsed' : 'card-toggle'}
+                    onClick={() => toggleCollapse('manual')}
+                    title={collapsed.has('manual') ? '展开' : '折叠'}
+                  >
+                    <span className="chev">▾</span>
+                  </button>
                   <span className="dot dot-on" />
                   <b>手动添加</b>
                 </div>
               </header>
+              {!collapsed.has('manual') && (
               <ul className="items">
                 {scan.manualItems.map((item) => (
                   <li key={item.key}>
@@ -288,6 +312,7 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
                   </li>
                 ))}
               </ul>
+              )}
             </section>
           )}
         </div>

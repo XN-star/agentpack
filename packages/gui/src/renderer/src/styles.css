@@ -250,6 +250,36 @@ body {
   margin-bottom: 8px;
 }
 
+.card-toggle {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  margin-right: 2px;
+  padding: 0;
+}
+
+.card-toggle:hover {
+  background: var(--card-2);
+  color: var(--text);
+}
+
+.card-toggle .chev {
+  display: block;
+  font-size: 12px;
+  transition: transform 0.15s ease;
+}
+
+.card-toggle.collapsed .chev {
+  transform: rotate(-90deg);
+}
+
 .card-empty {
   padding: 6px 0;
 }
