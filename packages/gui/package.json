@@ -3,11 +3,8 @@
   "version": "1.0.0",
   "description": "AgentPack 图形界面（Electron）",
   "license": "MIT",
+  "author": "AgentPack",
   "main": "out/main/index.js",
-  "dependencies": {
-    "archiver": "^7.0.1",
-    "yauzl": "^3.2.0"
-  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
@@ -19,7 +16,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "electron": "^33.2.1",
+    "electron": "33.4.11",
     "electron-builder": "^25.1.8",
     "electron-vite": "^2.3.0",
     "react": "^18.3.1",

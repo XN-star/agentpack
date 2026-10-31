@@ -154,14 +154,23 @@ export class ZipWriter {
   private readonly archive: archiver.Archiver;
   private readonly out: fs.WriteStream;
   private readonly errors: Error[] = [];
+  private pendingReject: ((e: Error) => void) | null = null;
+  private settled = false;
 
   constructor(outPath: string) {
     this.archive = archiver('zip', { zlib: { level: 6 } });
     this.out = fs.createWriteStream(outPath);
-    this.archive.on('warning', () => {
-      /* 非致命告警忽略 */
+    this.archive.on('warning', (e) => {
+      // 截断等视为非致命，但记录
+      this.errors.push(e instanceof Error ? e : new Error(String(e)));
     });
-    this.archive.on('error', (e) => this.errors.push(e));
+    this.archive.on('error', (e) => {
+      this.errors.push(e);
+      if (!this.settled && this.pendingReject) {
+        this.settled = true;
+        this.pendingReject(e);
+      }
+    });
     this.archive.pipe(this.out);
   }
 
@@ -174,10 +183,17 @@ export class ZipWriter {
   }
 
   async finalize(): Promise<void> {
-    await this.archive.finalize();
     await new Promise<void>((resolve, reject) => {
-      this.out.on('close', () => resolve());
+      this.pendingReject = reject;
+      this.out.on('close', () => {
+        if (!this.settled) {
+          this.settled = true;
+          resolve();
+        }
+      });
       this.out.on('error', reject);
+      // finalize 内部异常也走 reject
+      void this.archive.finalize().catch(reject);
     });
     if (this.errors.length > 0) {
       throw new AppError('IO_ERROR', 'zip 写入失败', this.errors[0]?.message);

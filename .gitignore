@@ -30,3 +30,6 @@ auth*.json
 npm-debug.log*
 .DS_Store
 Thumbs.db
+
+# 安全扫描 hook 的会话状态（工具自动生成，不入库）
+.mimosa/

@@ -30,7 +30,17 @@ export function hashThrough(): { transform: Transform; digestHex: () => string }
 
 export async function sha256OfFile(p: string): Promise<string> {
   const { transform, digestHex } = hashThrough();
-  await pipeline(fs.createReadStream(p), transform);
+  // Transform 必须有下游消费者，否则大数据量会因背压死锁；
+  // 这里用空 drain 消费输出，只取哈希副作用
+  await pipeline(
+    fs.createReadStream(p),
+    transform,
+    async function* drain(src) {
+      for await (const _chunk of src) {
+        // 丢弃
+      }
+    },
+  );
   return digestHex();
 }
 

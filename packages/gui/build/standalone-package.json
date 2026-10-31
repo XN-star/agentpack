@@ -1,0 +1,13 @@
+{
+  "name": "@agentpack/gui-standalone",
+  "version": "1.0.0",
+  "description": "AgentPack 打包暂存目录（独立安装 electron 相关工具链）",
+  "license": "MIT",
+  "author": "AgentPack",
+  "private": true,
+  "main": "out/main/index.js",
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "^25.1.8"
+  }
+}

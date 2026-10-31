@@ -10,7 +10,8 @@ files:
   - out/**
   - package.json
 
-# 不打包 node_modules：主进程与渲染层代码已全部内联打包
+# 主进程 bundle 已内联全部运行时依赖（archiver/yauzl/core），
+# 无 node_modules 需要收集，asar 完全自包含
 asar: true
 
 win:

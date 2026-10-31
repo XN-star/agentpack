@@ -12,10 +12,8 @@ export default defineConfig({
     },
     build: {
       outDir: 'out/main',
-      rollupOptions: {
-        input: 'src/main/index.ts',
-        external: ['archiver', 'yauzl'],
-      },
+      // archiver/yauzl 一并内联：GUI 包保持零生产依赖，
+      // electron-builder 因此跳过依赖收集（该步骤会破坏根 node_modules）
     },
   },
   preload: {
