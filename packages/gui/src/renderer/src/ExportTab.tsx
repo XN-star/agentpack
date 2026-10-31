@@ -50,6 +50,28 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
     setCollapsed(next);
   };
 
+  /** 当前过滤条件下可见的卡片 key（含手动添加） */
+  const visibleKeys = useMemo(() => {
+    if (!scan) return [] as string[];
+    const keys: string[] = [];
+    const agents =
+      filter && filter !== 'manual'
+        ? scan.agents.filter((a) => a.id === filter)
+        : scan.agents;
+    for (const a of agents) keys.push(a.id);
+    if ((filter === null || filter === 'manual') && scan.manualItems.length > 0) {
+      keys.push('manual');
+    }
+    return keys;
+  }, [scan, filter]);
+
+  const allCollapsed =
+    visibleKeys.length > 0 && visibleKeys.every((k) => collapsed.has(k));
+
+  const toggleAllCollapsed = () => {
+    setCollapsed(allCollapsed ? new Set() : new Set(visibleKeys));
+  };
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
@@ -177,6 +199,11 @@ export default function ExportTab({ scan, scanning, filter, onRescan, onAddManua
           )}
         </div>
         <div className="toolbar-actions">
+          {visibleKeys.length > 0 && (
+            <button className="btn" onClick={toggleAllCollapsed}>
+              {allCollapsed ? '全部展开' : '全部折叠'}
+            </button>
+          )}
           <button className="btn" onClick={onAddManual}>
             手动添加路径
           </button>

@@ -82,10 +82,30 @@ body {
 
 .agent-filter {
   flex: 1;
+  /* 关键：允许 flex 子项收缩到内容以下，agent 过多时列表内部滚动，
+     品牌/导航/主题按钮保持固定 */
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.agent-filter::-webkit-scrollbar {
+  width: 6px;
+}
+
+.agent-filter::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.agent-filter::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+.agent-filter::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .filter-title {
